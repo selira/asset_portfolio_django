@@ -1,0 +1,1 @@
+always run `source venv/bin/activate` before python commands.
