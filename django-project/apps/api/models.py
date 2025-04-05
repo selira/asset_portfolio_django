@@ -45,6 +45,9 @@ class AssetPrice(BaseModel):
 
     class Meta:
         unique_together = ['asset', 'date']
+        indexes = [
+            models.Index(fields=['date', 'asset']),
+        ]
 
     def __str__(self):
         return f"{self.asset} - {self.price}"
