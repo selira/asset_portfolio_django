@@ -11,7 +11,7 @@ class PortfolioHistoryView(TemplateView):
 
     def get_template_names(self):
         if self.request.GET.get('portfolio_id'):
-            return ['portfolio_results2.html']
+            return ['portfolio_results.html']
         return ['portfolio_history.html']
 
     def get_context_data(self, **kwargs):

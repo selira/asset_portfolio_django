@@ -5,9 +5,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .chart-container {
-            width: 80%;
-            margin: 20px auto;
+            width: 80%;  /* Fixed width for both charts */
             height: 400px;
+            margin: 20px auto;
         }
     </style>
 </head>
@@ -15,7 +15,7 @@
     <div class="chart-container">
         <canvas id="portfolioValueChart"></canvas>
     </div>
-    <div class="chart-container">
+    <div class="chart-container" style="height: 800px;">
         <canvas id="weightsChart"></canvas>
     </div>
 
@@ -36,6 +36,31 @@
         const fecha_inicio = urlParams.get('fecha_inicio');
         const fecha_fin = urlParams.get('fecha_fin');
 
+        const chartConfig = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    itemSort: function(a, b) {
+                        return b.datasetIndex - a.datasetIndex;
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: true
+                    },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                }
+            }
+        };
+
         // Fetch data from API
         fetch(`/api/portfolio/history/?portfolio_id=${portfolio_id}&fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`)
             .then(response => response.json())
@@ -52,20 +77,30 @@
                             label: 'Portfolio Value',
                             data: values,
                             borderColor: 'rgb(75, 192, 192)',
+                            borderWidth: 2,
                             tension: 0.1
                         }]
                     },
                     options: {
-                        responsive: true,
+                        ...chartConfig,
                         scales: {
+                            ...chartConfig.scales,
                             y: {
-                                beginAtZero: false
+                                beginAtZero: false,
+                                position: 'left',
+                                ticks: {
+                                    callback: function(value) {
+                                        // Format the value to millions of USD
+                                        return '$' + (value / 1e6) + ' M';
+                                    }
+                                }
                             }
                         },
                         plugins: {
+                            ...chartConfig.plugins,
                             title: {
                                 display: true,
-                                text: 'Portfolio Value Over Time'
+                                text: 'Valor de Portafolio (millones de USD)'
                             }
                         }
                     }
@@ -78,8 +113,9 @@
                 
                 const weightDatasets = assets.map((asset, index) => ({
                     label: asset,
-                    data: dates.map(date => weights[date][asset]), // Convert to percentage
+                    data: dates.map(date => weights[date][asset]),
                     backgroundColor: colors[index],
+                    borderColor: colors[index],
                     fill: true
                 }));
 
@@ -90,18 +126,27 @@
                         datasets: weightDatasets
                     },
                     options: {
-                        responsive: true,
+                        ...chartConfig,
                         scales: {
+                            ...chartConfig.scales,
                             y: {
                                 stacked: true,
                                 beginAtZero: true,
-                                max: 100
+                                max: 1,
+                                position: 'left',
+                                ticks: {
+                                    callback: function(value) {
+                                        // Pad the percentage value to 10 characters
+                                        return value.toString().padStart(8, ' ');
+                                    }
+                                }
                             }
                         },
                         plugins: {
+                            ...chartConfig.plugins,
                             title: {
                                 display: true,
-                                text: 'Asset Weights Over Time (%)'
+                                text: 'Weights de activos'
                             }
                         }
                     }
