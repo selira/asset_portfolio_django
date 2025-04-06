@@ -67,6 +67,17 @@
     </form>
 
     <script>
+        // document.getElementById('portfolioForm').onsubmit = function(e) {
+        //     e.preventDefault();
+        //     const formData = new FormData(this);
+        //     const params = new URLSearchParams();
+            
+        //     for (let pair of formData.entries()) {
+        //         params.append(pair[0], pair[1]);
+        //     }
+            
+        //     window.location.href = '/api/portfolio/history/?' + params.toString();
+        // };
         document.getElementById('portfolioForm').onsubmit = function(e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -76,7 +87,7 @@
                 params.append(pair[0], pair[1]);
             }
             
-            window.location.href = '/api/portfolio/history/?' + params.toString();
+            window.location.href = '?' + params.toString();
         };
     </script>
 </body>

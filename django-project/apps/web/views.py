@@ -9,6 +9,11 @@ class ItemListView(ListView):
 class PortfolioHistoryView(TemplateView):
     template_name = 'portfolio_history.html'
 
+    def get_template_names(self):
+        if self.request.GET.get('portfolio_id'):
+            return ['portfolio_results2.html']
+        return ['portfolio_history.html']
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['portfolios'] = Portfolio.objects.all()

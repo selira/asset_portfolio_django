@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portfolio History Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <canvas id="portfolioValueChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="weightsChart"></canvas>
+    </div>
+
+    <script>
+        // Function to generate random colors
+        function generateColors(count) {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                const color = `hsl(${(i * 360) / count}, 70%, 50%)`;
+                colors.push(color);
+            }
+            return colors;
+        }
+
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const portfolio_id = urlParams.get('portfolio_id');
+        const fecha_inicio = urlParams.get('fecha_inicio');
+        const fecha_fin = urlParams.get('fecha_fin');
+
+        // Fetch data from API
+        fetch(`/api/portfolio/history/?portfolio_id=${portfolio_id}&fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`)
+            .then(response => response.json())
+            .then(data => {
+                const dates = Object.keys(data.portfolio_value);
+                const values = Object.values(data.portfolio_value);
+                
+                // Portfolio Value Line Chart
+                new Chart(document.getElementById('portfolioValueChart'), {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Portfolio Value',
+                            data: values,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Portfolio Value Over Time'
+                            }
+                        }
+                    }
+                });
+
+                // Weights Stacked Area Chart
+                const weights = data.weights;
+                const assets = Object.keys(weights[dates[0]]);
+                const colors = generateColors(assets.length);
+                
+                const weightDatasets = assets.map((asset, index) => ({
+                    label: asset,
+                    data: dates.map(date => weights[date][asset]), // Convert to percentage
+                    backgroundColor: colors[index],
+                    fill: true
+                }));
+
+                new Chart(document.getElementById('weightsChart'), {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: weightDatasets
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Asset Weights Over Time (%)'
+                            }
+                        }
+                    }
+                });
+            });
+    </script>
+</body>
+</html>
