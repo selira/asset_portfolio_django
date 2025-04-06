@@ -91,7 +91,7 @@ def get_portfolio_history(initial_date: str, final_date: str, portfolio_id: int)
     for date, date_prices in prices_by_date.items():
         portfolio_value = Decimal('0.000')
         amounts = []
-        formatted_date = date.strftime('%Y-%m-%d') #for json output
+        formatted_date = date.strftime('%Y-%m-%d')
         weight_history[formatted_date] = {}
 
         # Calculate portfolio value
