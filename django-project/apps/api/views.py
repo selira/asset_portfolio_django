@@ -1,21 +1,11 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.core.exceptions import ValidationError
+from decimal import Decimal
 
-from apps.api.selectors import item_list, get_portfolio_history
-from apps.api.services import item_create
-
-class ItemListApi(APIView):
-    def get(self, request):
-        items = item_list()
-        return Response(items, status=status.HTTP_200_OK)
-
-    def post(self, request):
-        item = item_create(
-            name=request.data.get('name'),
-            description=request.data.get('description')
-        )
-        return Response(item, status=status.HTTP_201_CREATED)
+from apps.api.selectors import get_portfolio_history
+from apps.api.services import transfer_between_assets
     
 class PortfolioHistoryApi(APIView):
     def get(self, request):
@@ -30,3 +20,24 @@ class PortfolioHistoryApi(APIView):
         if not history:
             return Response({"error": "No data found for the given date range."}, status=status.HTTP_404_NOT_FOUND)
         return Response(history, status=status.HTTP_200_OK)
+    
+class AssetTransferApi(APIView):
+    def post(self, request):
+        try:
+            result = transfer_between_assets(
+                portfolio_id=int(request.data.get('portfolio')),
+                from_asset_id=int(request.data.get('venta')),
+                to_asset_id=int(request.data.get('compra')),
+                amount=Decimal(str(request.data.get('monto')))
+            )
+            return Response(result, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {'error': 'An unexpected error occurred'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
