@@ -14,6 +14,9 @@ def transfer_between_assets(*,
     Transfer amount between assets within the same portfolio.
     """
     initial_date = '2022-02-15'
+
+    if from_asset_id == to_asset_id:
+        raise ValidationError("No se puede transferir entre el mismo activo.")
     
     # Get current weights
     weights = PortfolioAssetWeight.objects.select_for_update().filter(
@@ -30,7 +33,7 @@ def transfer_between_assets(*,
     
     if from_asset_value < amount:
         raise ValidationError(
-            f"Insufficient funds in asset. Available: ${from_asset_value.quantize(Decimal('0.01'))}, Requested: ${amount}"
+            f"Monto insuficiente en activo. Disponible: ${from_asset_value.quantize(Decimal('0.01'))}, Requerido: ${amount}"
         )
     
     # Calculate new weights
@@ -46,7 +49,7 @@ def transfer_between_assets(*,
     
     return {
         'status': 'success',
-        'message': f'Transferred ${amount} from {from_weight.asset.name} to {to_weight.asset.name}',
+        'message': f'Venta de ${amount} de {from_weight.asset.name} y compra de ${amount} de {to_weight.asset.name}',
         'new_weights': {
             'from': float(from_weight.weight),
             'to': float(to_weight.weight)

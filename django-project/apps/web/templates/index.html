@@ -1,91 +1,161 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Portfolio History</title>
+    <title>Portfolio Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        form {
+                * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
             max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
+            margin: 40px auto;
+            padding: 32px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 0;
         }
+
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5568;
         }
+
         select, input {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #2d3748;
+            transition: all 0.2s;
         }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
         button {
-            padding: 10px 20px;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: white;
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
             border: none;
             cursor: pointer;
+            transition: all 0.2s;
         }
+
+        button[type="submit"] {
+            background-color: #3182ce;
+            color: white;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #2c5282;
+        }
+
         .trade-button {
-            padding: 10px 20px;
-            border-radius: 4px;
-            background-color: #28a745;
+            background-color: #48bb78;
             color: white;
-            border: none;
-            cursor: pointer;
         }
+
+        .trade-button:hover {
+            background-color: #38a169;
+        }
+
         .trade-section {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
         }
     </style>
 </head>
 <body>
-    <form id="portfolioForm">
-        <div class="form-group">
-            <label for="portfolio_id">Seleccionar Portafolio:</label>
-            <select name="portfolio_id" id="portfolio_id" required>
-                <option value="">Seleccionar Portafolio...</option>
-                {% for portfolio in portfolios %}
-                    <option value="{{ portfolio.id }}">{{ portfolio.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="fecha_inicio">Fecha Inicio:</label>
-            <input type="date" 
-                   id="fecha_inicio" 
-                   name="fecha_inicio"
-                   min="{{ min_date }}" 
-                   max="{{ max_date }}"
-                   value="{{ min_date }}"
-                   required>
-        </div>
+    <div class="container">
+        <h1>Portfolio Manager</h1>
+        <form id="portfolioForm">
+            <div class="form-group">
+                <label for="portfolio_id">Seleccionar Portafolio:</label>
+                <select name="portfolio_id" id="portfolio_id" required>
+                    <option value="">Seleccionar Portafolio...</option>
+                    {% for portfolio in portfolios %}
+                        <option value="{{ portfolio.id }}">{{ portfolio.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="fecha_inicio">Fecha Inicio:</label>
+                <input type="date" 
+                    id="fecha_inicio" 
+                    name="fecha_inicio"
+                    min="{{ min_date }}" 
+                    max="{{ max_date }}"
+                    value="{{ min_date }}"
+                    required>
+            </div>
 
-        <div class="form-group">
-            <label for="fecha_fin">Fecha Fin:</label>
-            <input type="date" 
-                   id="fecha_fin" 
-                   name="fecha_fin"
-                   min="{{ min_date }}" 
-                   max="{{ max_date }}"
-                   value="{{ max_date }}"
-                   required>
-        </div>
+            <div class="form-group">
+                <label for="fecha_fin">Fecha Fin:</label>
+                <input type="date" 
+                    id="fecha_fin" 
+                    name="fecha_fin"
+                    min="{{ min_date }}" 
+                    max="{{ max_date }}"
+                    value="{{ max_date }}"
+                    required>
+            </div>
 
-        <button type="submit">Get History</button>
-    </form>
+            <div class="button-group">
+                <button type="submit">Ver Historial</button>
+                <button type="button" onclick="window.location.href = '/trade'" class="trade-button">
+                    Compra Venta
+                </button>
+            </div>
 
-    <div class="trade-section">
-        <button onclick="window.location.href = '/trade'" class="trade-button">
-            Compra Venta
-        </button>
+        </form>
     </div>
-
-
 
     <script>
         document.getElementById('portfolioForm').onsubmit = function(e) {

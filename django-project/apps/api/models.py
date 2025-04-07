@@ -6,13 +6,6 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
-
-class Item(BaseModel):
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    
-    def __str__(self):
-        return self.name
     
 class Portfolio(BaseModel):
     name = models.CharField(max_length=255, unique=True)

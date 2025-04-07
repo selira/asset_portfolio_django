@@ -1,15 +1,36 @@
 from typing import List, Dict, Any
-from apps.api.models import Item, PortfolioAssetWeight, AssetPrice, Portfolio
+from apps.api.models import PortfolioAssetWeight, AssetPrice, Asset, Portfolio
 from decimal import Decimal
 
-def item_list() -> List[dict]:
-    items = Item.objects.all()
+def get_initial_amounts() -> List[dict]:
+    """
+    Get the initial amounts of each asset in the portfolio.
+    """
+    initial_value = Decimal('1000000000')
+        
+    assets = Asset.objects.all()
+    weights = PortfolioAssetWeight.objects.filter(
+        date='2022-02-15'
+    ).select_related('asset', 'portfolio')
     
-    return [{
-        'id': item.id,
-        'name': item.name,
-        'description': item.description
-    } for item in items]
+    # Create asset rows with portfolio amounts
+    portfolio_amounts = []
+    portfolios = Portfolio.objects.all()
+
+    # Create a row for each asset
+    for asset in assets:
+        asset_row = [asset.name]  # First element is asset name
+        for portfolio in portfolios:
+            weight = weights.filter(
+                portfolio=portfolio, 
+                asset=asset
+            ).first()
+            amount = weight.weight * initial_value if weight else Decimal('0')
+            asset_row.append(amount)
+        portfolio_amounts.append(asset_row)
+    
+    return assets, portfolios, portfolio_amounts
+
 
 def get_initial_quantities(portfolio_id: int) -> List[dict]:
     """

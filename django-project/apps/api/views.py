@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 
-from apps.api.selectors import get_portfolio_history
+from apps.api.selectors import get_portfolio_history, get_initial_amounts
 from apps.api.services import transfer_between_assets
     
 class PortfolioHistoryApi(APIView):
@@ -40,3 +40,12 @@ class AssetTransferApi(APIView):
                 {'error': 'An unexpected error occurred'}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+class InitialAmountsApi(APIView):
+    def get(self, request):
+        assets, portfolios, portfolio_amounts = get_initial_amounts()
+        return Response({
+            'assets': [asset.name for asset in assets],
+            'portfolios': [portfolio.name for portfolio in portfolios],
+            'portfolio_amounts': portfolio_amounts
+        }, status=status.HTTP_200_OK)
