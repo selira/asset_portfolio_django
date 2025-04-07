@@ -12,8 +12,6 @@ class PortfolioHistoryApi(APIView):
         initial_date = request.query_params.get('fecha_inicio')
         final_date = request.query_params.get('fecha_fin')
         portfolio_id = request.query_params.get('portfolio_id')
-        print(request.query_params)
-        print(initial_date, final_date, portfolio_id)
         if not initial_date or not final_date or not portfolio_id:
             return Response({"error": "Initial_date, final_date and portfolio ID are required "}, status=status.HTTP_400_BAD_REQUEST)
         history = get_portfolio_history(initial_date, final_date, portfolio_id)
