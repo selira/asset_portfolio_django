@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portfolio History</title>
+    <style>
+        form {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .trade-button {
+            padding: 10px 20px;
+            border-radius: 4px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .trade-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <form id="portfolioForm">
+        <div class="form-group">
+            <label for="portfolio_id">Seleccionar Portafolio:</label>
+            <select name="portfolio_id" id="portfolio_id" required>
+                <option value="">Seleccionar Portafolio...</option>
+                {% for portfolio in portfolios %}
+                    <option value="{{ portfolio.id }}">{{ portfolio.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="fecha_inicio">Fecha Inicio:</label>
+            <input type="date" 
+                   id="fecha_inicio" 
+                   name="fecha_inicio"
+                   min="{{ min_date }}" 
+                   max="{{ max_date }}"
+                   value="{{ min_date }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha_fin">Fecha Fin:</label>
+            <input type="date" 
+                   id="fecha_fin" 
+                   name="fecha_fin"
+                   min="{{ min_date }}" 
+                   max="{{ max_date }}"
+                   value="{{ max_date }}"
+                   required>
+        </div>
+
+        <button type="submit">Get History</button>
+    </form>
+
+    <div class="trade-section">
+        <button onclick="window.location.href = '/trade'" class="trade-button">
+            Compra Venta
+        </button>
+    </div>
+
+
+
+    <script>
+        document.getElementById('portfolioForm').onsubmit = function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const params = new URLSearchParams();
+            
+            for (let pair of formData.entries()) {
+                params.append(pair[0], pair[1]);
+            }
+            
+            window.location.href = 'history/?' + params.toString();
+        };
+    </script>
+</body>
+</html>

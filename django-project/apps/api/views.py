@@ -18,7 +18,7 @@ class PortfolioHistoryApi(APIView):
         if not history:
             return Response({"error": "No data found for the given date range."}, status=status.HTTP_404_NOT_FOUND)
         return Response(history, status=status.HTTP_200_OK)
-    
+
 class AssetTransferApi(APIView):
     def post(self, request):
         try:
@@ -35,6 +35,7 @@ class AssetTransferApi(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         except Exception as e:
+            print(f"Unexpected error: {e}")
             return Response(
                 {'error': 'An unexpected error occurred'}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

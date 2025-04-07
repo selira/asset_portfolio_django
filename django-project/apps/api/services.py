@@ -30,7 +30,7 @@ def transfer_between_assets(*,
     
     if from_asset_value < amount:
         raise ValidationError(
-            f"Insufficient funds in asset. Available: ${from_asset_value}, Requested: ${amount}"
+            f"Insufficient funds in asset. Available: ${from_asset_value.quantize(Decimal('0.01'))}, Requested: ${amount}"
         )
     
     # Calculate new weights

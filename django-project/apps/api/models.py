@@ -23,7 +23,7 @@ class Portfolio(BaseModel):
 class PortfolioAssetWeight(BaseModel):
     asset = models.ForeignKey('Asset', on_delete=models.CASCADE)
     portfolio = models.ForeignKey('Portfolio', on_delete=models.CASCADE)
-    weight = models.DecimalField(max_digits=10, decimal_places=3)
+    weight = models.DecimalField(max_digits=24, decimal_places=12)
     date = models.DateField()
 
     class Meta:
@@ -40,7 +40,7 @@ class Asset(BaseModel):
     
 class AssetPrice(BaseModel):
     asset = models.ForeignKey('Asset', on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=10, decimal_places=5)
+    price = models.DecimalField(max_digits=24, decimal_places=12)
     date = models.DateField()
 
     class Meta:
